@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<errno.h>
 #define train_file "trains.dat"
 #define passengers_file "passengers.dat"
 #define MAX_TRAIN 10
@@ -61,6 +62,36 @@ void addTrain() {
     printf("Data successfully added into file\n");
 
     fclose(filePtr);
+}
+
+/*
+ * Function: readInt
+ * Purpose : validate interger input : numbers only
+*/
+int readInt() {
+    char buffer[50];
+    int value;
+    char *endptr;
+
+    while(1) 
+    {
+        if(!fgets(buffer, sizeof(buffer), stdin)) 
+        {
+            printf("Input error\n");
+            continue;
+        }
+
+        errno = 0;
+        value = strtol(buffer, &endptr, 10);
+
+        if(errno != 0 || endptr == buffer || *endptr != '\n') 
+        {
+            printf("Please enter a valid number\n");
+            continue;
+        }
+
+        return value;
+    }
 }
 
 static unsigned int train_count = 0;
@@ -172,7 +203,7 @@ void bookTicket(struct Train trains[], struct Passenger passengers[]) {
     unsigned int train_no;
     printf("===============================\nEnter Train number: ");
 
-    scanf("%d", &train_no);
+    train_no = readInt();
     int idx =-1;
     for(int i=0;i<train_count;i++)
     {
@@ -194,7 +225,7 @@ void bookTicket(struct Train trains[], struct Passenger passengers[]) {
         printf("Your ticket will go into Waiting status (When available we will notify you)\n");
         printf("Are you ok with this (If yes enter 1 else 0): ");
         unsigned int ok = 0;
-        scanf("%d", &ok);
+        ok = readInt();
         if(ok == 0)
         {
             return;
@@ -238,7 +269,7 @@ void bookTicket(struct Train trains[], struct Passenger passengers[]) {
     {
         unsigned int age;
         printf("Enter your Age: ");
-        scanf("%d", &age);
+        age = readInt();
         if(age<0 || age>100)
         {
             printf("Please provide valid age (0-100)\n");
@@ -352,7 +383,7 @@ void cancelTicket(struct Train trains[], struct Passenger passengers[]) {
             printf("%s: Your seat is available for %d\n", passengers[i].name, train_no);
             unsigned int confirmed = 0; //ask user to confirm his ticket or not
             printf("Do you want to confirm it? If yes enter 1 else 0: ");
-            scanf("%d", &confirmed);
+            confirmed = readInt();
             if(confirmed == 1) //if confirmed, reduce available seats by 1
             {
                 for(int j=0;j<train_count;j++)
@@ -475,7 +506,7 @@ int main()
     do {
         showMenu();
         printf("Please select any one option (eg. 1): ");
-        scanf("%d", &choice);
+        choice = readInt();
         switch(choice) {
             case 1: displayTrains(trains);
                     break;
@@ -488,6 +519,6 @@ int main()
             default: printf("Invalid Choice\n");
         }
     } while(choice != 0);
-    
+
     return 0;
 }
