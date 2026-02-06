@@ -39,12 +39,12 @@ void addTrain() {
         {101, "Kutchh Express", "Navsari", "Kutchh", 600, 1},
         {203, "Gujarat Express", "Rajkot", "Ambaji", 500, 370},
         {110, "BL Vadnagar", "Vadnagar", "Navsari", 600, 400},
-        {215, "Vande Bharat", "Ahmedabad", "Mumbai", 400, 0},
+        {215, "Vande Bharat", "Ahmedabad", "Mumbai", 400, 2},
         {106, "Puri Express", "Surat", "Puri", 1000, 708},
         {118, "Chennai Express", "Surat", "Chennai", 600, 480},
         {165, "Bengaluru Express", "Bengaluru", "Puri", 650, 0},
         {102, "Mumbai Central", "Delhi", "Mumbai", 450, 300},
-        {100, "Kerala Express", "Delhi", "Kerala", 800, 1}
+        {100, "Kerala Express", "Delhi", "Kerala", 800, 3}
     };
 
     FILE* filePtr = NULL;
@@ -115,7 +115,7 @@ void loadPassengers(struct Passenger passengers[]) {
 
     if(filePtr == NULL)
     {
-        printf("Can't open file\n");
+        printf("There is no passengers available\n");
         return;
     }
 
@@ -359,8 +359,8 @@ void cancelTicket(struct Train trains[], struct Passenger passengers[]) {
                 {
                     if(train_no == trains[j].train_no)
                     {
-                        trains[j].available_seats -= 1;
                         passengers[i].seat_no = trains[j].total_seats - trains[j].available_seats + 1;
+                        trains[j].available_seats -= 1;
                         passengers[i].ts = Confirmed; // mark status as confirmed
                         break;
                     }
@@ -394,7 +394,7 @@ void cancelTicket(struct Train trains[], struct Passenger passengers[]) {
     }
 
     //overwrite all updated passengers data into file - ticket status changed if ticket cancelled
-    fwrite(passengers, sizeof(struct Passenger), 1, passenger_ptr);
+    fwrite(passengers, sizeof(struct Passenger), passenger_count, passenger_ptr);
 
     fclose(passenger_ptr);
 }
@@ -488,6 +488,6 @@ int main()
             default: printf("Invalid Choice\n");
         }
     } while(choice != 0);
-
+    
     return 0;
 }
